@@ -64,7 +64,7 @@ class Prefork
      *
      * @return bool True in manager process, false in child processes
      */
-    public function start()
+    public function start($callback = null)
     {
         $this->manager_pid     = posix_getpid();
         $this->signal_received = null;
@@ -99,6 +99,10 @@ class Prefork
                     }
 
                     return false;
+                }
+
+                if ( $callback && is_callable($callback) ) {
+                    call_user_func_array($callback, [$this, $pid]);
                 }
                 $this->worker_pids[$pid] = $this->generation;
             }
